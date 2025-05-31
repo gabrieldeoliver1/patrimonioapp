@@ -1,0 +1,50 @@
+/* static/css/style.css */
+/* Este arquivo pode ser usado para estilos globais personalizados,
+   além do Tailwind CSS, se necessário. */
+
+body {
+    font-family: Arial, sans-serif; /* Fallback font */
+    background-color: #f8f9fa; /* Um cinza claro */
+}
+
+/* Os estilos .card e .flash-message são definidos diretamente nos arquivos HTML
+   para aproveitar a sintaxe do Tailwind CSS.
+   Se quiser adicionar estilos globais aqui, faça-o.
+   Ex: .some-custom-class { color: #1a202c; }
+*/
+
+/* Exemplo de como você pode querer sobrescrever algo do Tailwind aqui,
+   mas geralmente é melhor usar as classes do Tailwind diretamente no HTML. */
+/* .navbar-text {
+    color: rgba(255, 255, 255, 0.75);
+} */
+
+/* Estilos para mensagens flash - Mantidos aqui para consistência com o original,
+   mas é mais comum usar as classes do Tailwind diretamente.
+   Estes são os estilos que o 'base.html' espera. */
+.flash-message {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+}
+.flash-success {
+    background-color: #d4edda; /* bg-green-100 */
+    color: #155724; /* text-green-800 */
+    border: 1px solid #c3e6cb; /* border-green-200 */
+}
+.flash-info {
+    background-color: #d1ecf1; /* bg-blue-100 */
+    color: #0c5460; /* text-blue-800 */
+    border: 1px solid #bee5eb; /* border-blue-200 */
+}
+.flash-warning {
+    background-color: #fff3cd; /* bg-yellow-100 */
+    color: #856404; /* text-yellow-800 */
+    border: 1px solid #ffeeba; /* border-yellow-200 */
+}
+.flash-error, .flash-danger { /* bg-red-100 */
+    background-color: #f8d7da;
+    color: #721c24; /* text-red-800 */
+    border: 1px solid #f5c6cb; /* border-red-200 */
+}
