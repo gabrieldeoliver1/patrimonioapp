@@ -1,0 +1,43 @@
+[
+    {
+        "id": "c6cb799a-041c-48eb-8db7-5d25190c4858",
+        "mensagem": "Novo bem 'testeteste' cadastrado por Administrador do Sistema.",
+        "data_criacao": "2025-05-25 16:33:06",
+        "lida": true,
+        "tipo": "info",
+        "destinatario_id": null
+    },
+    {
+        "id": "b97accdc-d0c6-401c-8931-8754a13b0634",
+        "mensagem": "Novo bem 'testeteste' cadastrado por Administrador do Sistema.",
+        "data_criacao": "2025-05-25 16:32:45",
+        "lida": true,
+        "tipo": "info",
+        "destinatario_id": null
+    },
+    {
+        "id": "426d5883-c46f-40fc-9aef-80f8eb130882",
+        "mensagem": "Novo bem 'teste' cadastrado por Administrador do Sistema.",
+        "data_criacao": "2025-05-25 16:32:26",
+        "lida": true,
+        "tipo": "info",
+        "destinatario_id": null
+    },
+    {
+        "id": "811db25a-0d35-411e-9d8b-7518be08b640",
+        "mensagem": "Bem 'tsettsetset' transferido para o setor 'ARSAL ASEG - Assessoria de Recuperação de Crédito' por Administrador do Sistema.",
+        "data_criacao": "2025-05-25 15:26:25",
+        "lida": true,
+        "tipo": "info",
+        "destinatario_id": null
+    },
+    {
+        "id": "c6e8b4d9-2594-4547-9a5a-10ffa68c9a22",
+        "mensagem": "Novo bem 'tsettsetset' cadastrado por Administrador do Sistema.",
+        "data_criacao": "2025-05-25 15:23:20",
+        "lida": true,
+        "tipo": "info",
+        "destinatario_id": null
+    },
+    "Bem 04-000000002 transferido do setor \"ARSAL ASCOR - Assessoria de Comunicação\" para \"ARSAL ASEG - Assessoria de Recuperação de Crédito\" por amado."
+]

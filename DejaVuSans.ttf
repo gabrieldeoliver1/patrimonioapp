@@ -1,0 +1,6 @@
+# Em app_patrimonio.py, dentro da classe PDF, no método header:
+# font_path_local = "fonts/DejaVuSans.ttf" # Se estiver em uma subpasta 'fonts'
+font_path_local = "DejaVuSans.ttf" # Se estiver no mesmo diretório do app.py
+if os.path.exists(font_path_local):
+    self.add_font('DejaVu', '', font_path_local)
+    font_name = 'DejaVu'

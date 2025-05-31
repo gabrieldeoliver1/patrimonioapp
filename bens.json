@@ -1,0 +1,42 @@
+[
+    {
+        "id": "bd1f280c-839e-496a-b36d-8e866bd7b24c",
+        "nome": "tsettsetset",
+        "descricao": "tsettestsetsetsetset",
+        "numero_patrimonio": "04-000001",
+        "setor_atual": "b8c9d0e1-f2a3-4567-8901-234567123456",
+        "data_aquisicao": "2025-05-25",
+        "status": "Ótimo",
+        "observacoes": ""
+    },
+    {
+        "id": "48a8f325-5de9-424a-8a00-e46f44ffe1a4",
+        "nome": "teste",
+        "descricao": "testetestetesteteste",
+        "numero_patrimonio": "04-000002",
+        "setor_atual": "a7b8c9d0-e1f2-3456-7890-123456012345",
+        "data_aquisicao": "2025-05-25",
+        "status": "Bom",
+        "observacoes": "testeteste"
+    },
+    {
+        "id": "6a187ce8-3a04-4371-b479-8d633a4dbae3",
+        "nome": "testeteste",
+        "descricao": "testetesteteste",
+        "numero_patrimonio": "04-000003",
+        "setor_atual": "a7b8c9d0-e1f2-3456-7890-123456012345",
+        "data_aquisicao": "2025-05-25",
+        "status": "Regular",
+        "observacoes": "testeteste"
+    },
+    {
+        "id": "0f507162-d3f2-4c27-9396-8be01ca8a16c",
+        "nome": "testeteste",
+        "descricao": "testetesteteste",
+        "numero_patrimonio": "04-000004",
+        "setor_atual": "f2a3b4c5-d6e7-8901-2345-678901567890",
+        "data_aquisicao": "2025-05-25",
+        "status": "Regular",
+        "observacoes": "testeteste"
+    }
+]

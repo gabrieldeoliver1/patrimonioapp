@@ -1,0 +1,29 @@
+{
+    "admin": {
+        "senha": "scrypt:32768:8:1$3oHlxE3NER2lP38g$9a42b6f48c80469b04f9a8c271083533efd123a561d605c7dd00907a930142ef43df5b2e234349af43ff91edb875636b1e66cb6c41a2685c0498b0b43e5987e2",
+        "role": "admin",
+        "nome_completo": "Administrador do Sistema",
+        "email": "",
+        "data_cadastro": "2025-05-25 14:22:26"
+    },
+    "amado": {
+        "senha": "scrypt:32768:8:1$9XRONoXc7YOaAeHr$825ea0bfa543e253b51cdf03a5aeeb2e015695ecf3afa5afa1acebff32c3a7f0f9278d3d2b86c9d79a4a494df3ba211ea1f332bc854400114b9f524abf1f29c5",
+        "role": "gestor",
+        "nome_completo": "",
+        "email": "",
+        "setor_id": "a7b8c9d0-e1f2-3456-7890-123456012345",
+        "data_cadastro": "2025-05-25 15:48:22",
+        "setores_ids": [
+            "a7b8c9d0-e1f2-3456-7890-123456012345",
+            "b8c9d0e1-f2a3-4567-8901-234567123456"
+        ]
+    },
+    "alanzinho": {
+        "senha": "scrypt:32768:8:1$5HqLTZddtirFXu5i$e6a6f6a9896ec21f5b19c892de1a164ef0fd33b300496c5b6120e941aa0785373ffb270ec6cba320f7a00212a82776030febf3c1f0b89be0a16a526732ca8070",
+        "role": "user",
+        "nome_completo": "",
+        "email": "",
+        "setor_id": "a7b8c9d0-e1f2-3456-7890-123456012345",
+        "data_cadastro": "2025-05-25 15:48:54"
+    }
+}

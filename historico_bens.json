@@ -1,0 +1,42 @@
+[ 
+    {
+        "id": "71d634e1-d684-4567-8e32-967661a9ad00",
+        "bem_id": "bd1f280c-839e-496a-b36d-8e866bd7b24c",
+        "data_hora": "2025-05-25 15:23:20",
+        "tipo_acao": "Cadastro",
+        "detalhes": "Bem 'tsettsetset' cadastrado.",
+        "usuario_responsavel": "admin"
+    },
+    {
+        "id": "00bfe36d-2414-4572-a78c-b73122d3ecad",
+        "bem_id": "bd1f280c-839e-496a-b36d-8e866bd7b24c",
+        "data_hora": "2025-05-25 15:26:25",
+        "tipo_acao": "Transferência",
+        "detalhes": "Bem 'tsettsetset' transferido de 'ARSAL ASCOR - Assessoria de Comunicação' para 'ARSAL ASEG - Assessoria de Recuperação de Crédito'. Observações: Nenhuma.",
+        "usuario_responsavel": "admin"
+    },
+    {
+        "id": "c9c43714-c5b4-4abb-8c02-0f4ee5962b29",
+        "bem_id": "48a8f325-5de9-424a-8a00-e46f44ffe1a4",
+        "data_hora": "2025-05-25 16:32:26",
+        "tipo_acao": "Cadastro",
+        "detalhes": "Bem 'teste' cadastrado.",
+        "usuario_responsavel": "admin"
+    },
+    {
+        "id": "cbe377f7-19c9-4f98-b702-04077f8015ac",
+        "bem_id": "6a187ce8-3a04-4371-b479-8d633a4dbae3",
+        "data_hora": "2025-05-25 16:32:45",
+        "tipo_acao": "Cadastro",
+        "detalhes": "Bem 'testeteste' cadastrado.",
+        "usuario_responsavel": "admin"
+    },
+    {
+        "id": "47b631cc-6c90-44a5-84ed-89a0b36de569",
+        "bem_id": "0f507162-d3f2-4c27-9396-8be01ca8a16c",
+        "data_hora": "2025-05-25 16:33:06",
+        "tipo_acao": "Cadastro",
+        "detalhes": "Bem 'testeteste' cadastrado.",
+        "usuario_responsavel": "admin"
+    }
+]

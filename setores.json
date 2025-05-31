@@ -1,0 +1,164 @@
+[
+    {
+        "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "nome": "ABDTRAN",
+        "descricao": "Assessoria Técnica de Banco de Dados do Transporte",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "b2c3d4e5-f6a7-8901-2345-678901bcdef0",
+        "nome": "AFTRAN",
+        "descricao": "Assessoria Técnica de Fiscalização do Sistema de Transporte",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "c3d4e5f6-a7b8-9012-3456-789012cdef01",
+        "nome": "AGT",
+        "descricao": "Assessoria Técnica Executiva de Governança e Transparência",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "d4e5f6a7-b8c9-0123-4567-890123def012",
+        "nome": "AMONTRAN",
+        "descricao": "Assessoria Técnica de Monitoramento do Sistema de Transporte",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "e5f6a7b8-c9d0-1234-5678-901234ef0123",
+        "nome": "AMITRAN",
+        "descricao": "Assessoria Técnica de Multas do Sistema de Transporte",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "f6a7b8c9-d0e1-2345-6789-012345f01234",
+        "nome": "APTRAN",
+        "descricao": "Assessoria Técnica de Planejamento do Sistema de Transporte",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "a7b8c9d0-e1f2-3456-7890-123456012345",
+        "nome": "ASCOR",
+        "descricao": "Assessoria de Comunicação",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "b8c9d0e1-f2a3-4567-8901-234567123456",
+        "nome": "ASEG",
+        "descricao": "Assessoria de Recuperação de Crédito",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "c9d0e1f2-a3b4-5678-9012-345678234567",
+        "nome": "ASTEC",
+        "descricao": "Assessoria de Informação e Tecnologia",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "d0e1f2a3-b4c5-6789-0123-456789345678",
+        "nome": "ASTF",
+        "descricao": "Assessoria Técnica de Frotas",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "e1f2a3b4-c5d6-7890-1234-567890456789",
+        "nome": "ATLX",
+        "descricao": "Assessoria Técnica de Almoxarifado",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "f2a3b4c5-d6e7-8901-2345-678901567890",
+        "nome": "ATLIC",
+        "descricao": "Assessoria Técnica de Licitações e Contratos",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "e7f8a9b0-c1d2-3456-7890-123456a01234",
+        "nome": "CJUR",
+        "descricao": "Coordenadoria Jurídica de Regulação",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "b6c7d8e9-f0a1-2345-6789-012345d90123",
+        "nome": "DIP",
+        "descricao": "Diretoria da Presidência",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "f0a1b2c3-d4e5-6789-0123-456789b34567",
+        "nome": "GADM",
+        "descricao": "Gerência Administrativa",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "01b2c3d4-e5f6-7890-1234-567890c45678",
+        "nome": "GEEM",
+        "descricao": "Gerência Econômica e Estudos do Mercado",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "12c3d4e5-f6a7-8901-2345-678901d56789",
+        "nome": "GEENE",
+        "descricao": "Gerência de Regulação Operacional de Energia Elétrica",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "23d4e5f6-a7b8-9012-3456-789012e67890",
+        "nome": "GEGAS",
+        "descricao": "Gerência de Regulação Operacional de Gás Natural",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "34e5f6a7-b8c9-0123-4567-890123f78901",
+        "nome": "GESAN",
+        "descricao": "Gerência de Regulação Operacional de Saneamento",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "56a7b8c9-d0e1-2345-6789-012345b90123",
+        "nome": "GETRAN",
+        "descricao": "Gerência de Regulação Operacional do Transporte Intermunicipal",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "67b8c9d0-e1f2-3456-7890-123456c01234",
+        "nome": "GVAL",
+        "descricao": "Gerência de Valorização de Pessoas",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "78c9d0e1-f2a3-4567-8901-234567d12345",
+        "nome": "ARSAL ON-LINE",
+        "descricao": "Assessoria Técnica de Atendimento On-line",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "89d0e1f2-a3b4-5678-9012-345678e23456",
+        "nome": "PROT",
+        "descricao": "Arsal Protocolo",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "90e1f2a3-b4c5-6789-0123-456789f34567",
+        "nome": "PROT ARP",
+        "descricao": "Arsal Protocolo - Arapiraca",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "01f2a3b4-c5d6-7890-1234-567890a45678",
+        "nome": "PROT DEL",
+        "descricao": "Arsal Protocolo - Delmiro Gouveia",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "12a3b4c5-d6e7-8901-2345-678901b56789",
+        "nome": "PROT SAG",
+        "descricao": "Arsal Protocolo - Santana do Ipanema",
+        "data_criacao": "2024-05-26 00:00:00"
+    },
+    {
+        "id": "23b4c5d6-e7f8-9012-3456-789012c67890",
+        "nome": "SALA LÍLAS",
+        "descricao": "Sala Lílas",
+        "data_criacao": "2024-05-26 00:00:00"
+    }
+]
