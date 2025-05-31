@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico de Movimentações - Gestão de Património{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 md:mb-0">
+                <i class="fas fa-history mr-3 text-blue-600"></i>Histórico de Movimentações
+            </h1>
+            {# Você pode adicionar um botão de exportar ou filtros aqui, se desejar no futuro. Ex:
+            <div class="flex items-center">
+                <input type="text" id="searchHistoricoInput" onkeyup="filterHistoricoTable()" placeholder="Buscar no histórico..." class="w-full sm:w-64 pl-4 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 mr-2">
+                 <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md">
+                    <i class="fas fa-file-excel mr-2"></i>Exportar
+                </button>
+            </div>
+            #}
+        </div>
+
+        <nav class="bg-gray-100 text-gray-700 p-3 rounded-lg shadow-sm mb-8">
+            <div class="container mx-auto flex flex-wrap items-center space-x-2 sm:space-x-4 text-sm">
+                <a href="{{ url_for('dashboard') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>Dashboard
+                </a>
+                <span class="text-gray-400">/</span>
+                <a href="{{ url_for('listar_bens') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-boxes mr-1 sm:mr-2"></i>Bens
+                </a>
+                <span class="text-gray-400">/</span>
+                <span class="font-semibold text-blue-600">Histórico</span>
+            </div>
+        </nav>
+
+        {% if historico %}
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table id="historicoTable" class="min-w-full leading-normal">
+                <thead class="bg-gray-800 text-gray-100">
+                    <tr>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Data/Hora</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Bem</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Ação</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Detalhes</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Usuário Responsável</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {% for entrada in historico %}
+                    <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm whitespace-no-wrap">{{ entrada.data_hora }}</td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="font-semibold whitespace-no-wrap">{{ entrada.nome_bem }}</p>
+                            {# CORREÇÃO APLICADA ABAIXO #}
+                            <p class="text-gray-600 text-xs whitespace-no-wrap">ID: {{ entrada.get('bem_id', 'N/A')[:8] }}{% if entrada.get('bem_id', '')|length > 8 %}...{% endif %}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                             <span class="relative inline-block px-3 py-1 font-semibold leading-tight rounded-full
+                                {% if entrada.tipo_acao == 'Cadastro' %} bg-green-100 text-green-900
+                                {% elif entrada.tipo_acao == 'Edição' %} bg-yellow-100 text-yellow-900
+                                {% elif entrada.tipo_acao == 'Transferência' %} bg-blue-100 text-blue-900
+                                {% elif entrada.tipo_acao == 'Exclusão' %} bg-red-100 text-red-900
+                                {% else %} bg-gray-100 text-gray-700
+                                {% endif %}">
+                                <span aria-hidden class="absolute inset-0 opacity-50 rounded-full
+                                    {% if entrada.tipo_acao == 'Cadastro' %} bg-green-200
+                                    {% elif entrada.tipo_acao == 'Edição' %} bg-yellow-200
+                                    {% elif entrada.tipo_acao == 'Transferência' %} bg-blue-200
+                                    {% elif entrada.tipo_acao == 'Exclusão' %} bg-red-200
+                                    {% else %} bg-gray-200
+                                    {% endif %}"></span>
+                                <span class="relative">{{ entrada.tipo_acao }}</span>
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="break-words">{{ entrada.detalhes }}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm whitespace-no-wrap">{{ entrada.nome_usuario }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-10">
+            <i class="fas fa-file-alt fa-4x text-gray-400 mb-4"></i>
+            <p class="text-gray-500 text-xl">Nenhum histórico de movimentações encontrado.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Função de filtro para a tabela de histórico (se o input de busca for adicionado)
+function filterHistoricoTable() {
+    let input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById("searchHistoricoInput");
+    if (!input) return; // Sai se o input não existir
+    filter = input.value.toUpperCase();
+    table = document.getElementById("historicoTable");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) { // Começa em 1 para pular o cabeçalho
+        tr[i].style.display = "none"; 
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) { 
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = ""; 
+                    break; 
+                }
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

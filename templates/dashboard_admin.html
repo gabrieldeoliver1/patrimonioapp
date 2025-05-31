@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Administrador - Gestão de Patrimônio{% endblock %}
+{% block content %}
+    <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center md:text-left">Dashboard Administrador</h1>
+    <div class="mb-6 text-center md:text-left space-y-2 sm:space-y-0 sm:space-x-3">
+        <a href="{{ url_for('cadastrar_bem') }}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-150 text-sm">
+            <i class="fas fa-plus-circle mr-1"></i>Cadastrar Novo Bem
+        </a>
+        <a href="{{ url_for('relatorio_bens_pdf', setor_id=current_selected_ids_for_template) }}" target="_blank" class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-150 text-sm">
+            <i class="fas fa-file-pdf mr-1"></i>Gerar Relatório PDF (Visão Atual)
+        </a>
+    </div>
+    {# REMOVIDO: Condição 'if setores_para_filtro_admin' para garantir que o filtro sempre apareça. #}
+    <div class="mb-6 p-4 bg-white shadow-md rounded-lg">
+        <form method="GET" action="{{ url_for('dashboard') }}" class="md:flex md:items-center md:space-x-3">
+            <label for="setor_dashboard_filter_admin" class="text-gray-700 font-medium mb-2 md:mb-0">Filtrar por Setor:</label>
+            <select name="setor_id" id="setor_dashboard_filter_admin" class="form-select mt-1 block w-full md:w-auto px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                <option value="">Todos os Setores</option>
+                {% for setor in setores_para_filtro_admin %}
+                    <option value="{{ setor.id }}" {% if setor.id == request.args.get('setor_id') %}selected{% endif %}>{{ setor.nome }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-150 mt-3 md:mt-0 flex items-center justify-center">
+                <i class="fas fa-filter mr-1"></i>Aplicar Filtro
+            </button>
+        </form>
+    </div>
+    
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg shadow-lg p-6 text-white flex items-center justify-between transform hover:scale-105 transition duration-300">
+            <div>
+                <div class="text-sm font-semibold opacity-80 mb-1">Total de Bens Cadastrados</div>
+                <div class="text-4xl font-bold">{{ total_bens }}</div>
+            </div>
+            <i class="fas fa-boxes text-5xl opacity-40"></i>
+        </div>
+        <div class="bg-gradient-to-r from-green-500 to-green-700 rounded-lg shadow-lg p-6 text-white flex items-center justify-between transform hover:scale-105 transition duration-300">
+            <div>
+                <div class="text-sm font-semibold opacity-80 mb-1">Bens em Ótimo Estado</div>
+                <div class="text-4xl font-bold">{{ bens_otimo_estado }}</div>
+            </div>
+            <i class="fas fa-check-circle text-5xl opacity-40"></i>
+        </div>
+        {# REMOVIDO: O card "Bens Necessitando Reparo" foi removido conforme sua instrução. #}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white shadow-xl rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-bar mr-2 text-blue-600"></i>Bens por Setor
+            </h2>
+            {% if (chart_data_setor | default({})).labels and (chart_data_setor | default({})).labels|length > 0 and (chart_data_setor | default({})).data and (chart_data_setor | default({})).data|sum > 0 %}
+            <div class="relative h-72">
+                <canvas id="bensPorSetorChart"></canvas>
+            </div>
+            {% else %}
+            <div class="text-center py-10">
+                <i class="fas fa-chart-bar fa-4x text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-xl">Sem dados suficientes para exibir o gráfico de bens por setor.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="bg-white shadow-xl rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-pie mr-2 text-green-600"></i>Bens por Condição
+            </h2>
+            {% if (chart_condicao_data | default({})).labels and (chart_condicao_data | default({})).labels|length > 0 and (chart_condicao_data | default({})).data and (chart_condicao_data | default({})).data|sum > 0 %}
+            <div class="relative h-72">
+                <canvas id="bensPorCondicaoChart"></canvas>
+            </div>
+            {% else %}
+            <div class="text-center py-10">
+                <i class="fas fa-chart-pie fa-4x text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-xl">Sem dados suficientes para exibir o gráfico de bens por condição.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="bg-white shadow-xl rounded-xl p-6 lg:col-span-2">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-line mr-2 text-purple-600"></i>Atividade Diária (Últimos 30 Dias)
+            </h2>
+            {% if (daily_activity_data | default({})).labels and (daily_activity_data | default({})).labels|length > 0 and (daily_activity_data | default({})).data and (daily_activity_data | default({})).data|sum > 0 %}
+            <div class="relative h-80">
+                <canvas id="dailyActivityChart"></canvas>
+            </div>
+            {% else %}
+            <div class="text-center py-10">
+                <i class="fas fa-calendar-alt fa-4x text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-xl">Sem dados de atividade para exibir.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dados e opções de gráfico comuns
+            const chartDataSetor = {{ chart_data_setor | default({}) | tojson }};
+            const chartCondicaoData = {{ chart_condicao_data | default({}) | tojson }};
+            const dailyActivityDataJS = {{ daily_activity_data | default({}) | tojson }};
+            const chartColors = ['#4A90E2', '#50C878', '#FFD700', '#FF6347', '#9370DB', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+            const commonChartOptions = { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { 
+                        position: 'top', 
+                        labels: {
+                            boxWidth: 12, // slightly larger color box
+                            padding: 10, // more padding
+                            font: {
+                                size: 12, // slightly larger font
+                                family: 'Inter, sans-serif' // use Inter font
+                            }
+                        } 
+                    }, 
+                    title: { display: false } 
+                }, 
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            precision: 0, 
+                            font: {
+                                size: 11, // slightly larger font
+                                family: 'Inter, sans-serif'
+                            } 
+                        },
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)' // lighter grid lines
+                        }
+                    }, 
+                    x: { 
+                        ticks: { 
+                            font: {
+                                size: 11, // slightly larger font
+                                family: 'Inter, sans-serif'
+                            } 
+                        },
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)' // lighter grid lines
+                        }
+                    } 
+                } 
+            };
+
+            // Gráfico de Bens por Setor
+            const ctxSetor = document.getElementById('bensPorSetorChart');
+            if (ctxSetor && chartDataSetor && chartDataSetor.labels && chartDataSetor.labels.length > 0 && chartDataSetor.data && chartDataSetor.data.some(d => d > 0)) {
+                new Chart(ctxSetor.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: chartDataSetor.labels,
+                        datasets: [{
+                            label: 'Nº de Bens',
+                            data: chartDataSetor.data,
+                            backgroundColor: chartColors,
+                            borderColor: chartColors.map(color => color.replace(/,( *[\d\.]+)\)/, ', 1)')), // Ensuring full opacity for border
+                            borderWidth: 1
+                        }]
+                    },
+                    options: commonChartOptions
+                });
+            } else if (ctxSetor) {
+                ctxSetor.parentNode.innerHTML = '<div class="text-center py-10"><i class="fas fa-chart-bar fa-4x text-gray-400 mb-4"></i><p class="text-gray-500 text-xl">Sem dados suficientes para exibir o gráfico de bens por setor.</p></div>';
+            }
+
+            // Gráfico de Bens por Condição
+            const ctxCondicao = document.getElementById('bensPorCondicaoChart');
+            if (ctxCondicao && chartCondicaoData && chartCondicaoData.labels && chartCondicaoData.labels.length > 0 && chartCondicaoData.data && chartCondicaoData.data.some(d => d > 0)) {
+                new Chart(ctxCondicao.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: chartCondicaoData.labels,
+                        datasets: [{
+                            label: 'Nº de Bens',
+                            data: chartCondicaoData.data,
+                            backgroundColor: chartColors,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { 
+                                position: 'right', // Positioning legend to the right for pie chart
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 10,
+                                    font: {
+                                        size: 12,
+                                        family: 'Inter, sans-serif'
+                                    }
+                                } 
+                            }, 
+                            title: { display: false } 
+                        } 
+                    }
+                });
+            } else if (ctxCondicao) {
+                ctxCondicao.parentNode.innerHTML = '<div class="text-center py-10"><i class="fas fa-chart-pie fa-4x text-gray-400 mb-4"></i><p class="text-gray-500 text-xl">Sem dados suficientes para exibir o gráfico de bens por condição.</p></div>';
+            }
+
+            // Gráfico de Atividade Diária
+            const ctxActivity = document.getElementById('dailyActivityChart');
+            if (ctxActivity && dailyActivityDataJS && Object.keys(dailyActivityDataJS).length > 0 && Object.values(dailyActivityDataJS).some(v => v > 0)) {
+                new Chart(ctxActivity.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(dailyActivityDataJS).map(dateStr => { 
+                            const date = new Date(dateStr + 'T00:00:00Z'); 
+                            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', timeZone: 'UTC' }); 
+                        }),
+                        datasets: [{
+                            label: 'Nº de Alterações',
+                            data: Object.values(dailyActivityDataJS),
+                            borderColor: '#4A90E2', 
+                            backgroundColor: 'rgba(74, 144, 226, 0.1)', 
+                            fill: true,
+                            tension: 0.4, 
+                            pointRadius: 3, 
+                            pointBackgroundColor: '#4A90E2',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: '#4A90E2',
+                            pointHoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: { 
+                        ...commonChartOptions, 
+                        plugins: {
+                            ...commonChartOptions.plugins,
+                            legend: {display: false}
+                        },
+                        scales: { 
+                            ...commonChartOptions.scales, 
+                            y: {
+                                ...commonChartOptions.scales.y,
+                                title: { 
+                                    display: true, 
+                                    text: 'Número de Alterações',
+                                    font: { size: 12, family: 'Inter, sans-serif' },
+                                    color: '#666'
+                                },
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            },
+                            x: {
+                                ...commonChartOptions.scales.x,
+                                title: {
+                                    display: true,
+                                    text: 'Data',
+                                    font: { size: 12, family: 'Inter, sans-serif' },
+                                    color: '#666'
+                                }
+                            }
+                        } 
+                    } 
+                });
+            } else if (ctxActivity) {
+                ctxActivity.parentNode.innerHTML = '<div class="text-center py-10"><i class="fas fa-calendar-alt fa-4x text-gray-400 mb-4"></i><p class="text-gray-500 text-xl">Sem dados de atividade para exibir.</p></div>';
+            }
+        });
+    </script>
+{% endblock %}

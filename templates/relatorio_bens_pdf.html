@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo_relatorio }}</title>
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 1.5cm 1cm;
+            @bottom-center {
+                content: "Página " counter(page) " de " counter(pages);
+                font-size: 9pt;
+                color: #666;
+            }
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 18pt;
+            margin: 0;
+            color: #222;
+        }
+        .header p {
+            font-size: 9pt;
+            color: #555;
+            margin-top: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 9pt;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            text-align: left;
+            word-wrap: break-word; 
+        }
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            color: #444;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #777;
+        }
+        .footer-info {
+            margin-top: 30px;
+            font-size: 8pt;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ titulo_relatorio }}</h1>
+        <p>Gerado em: {{ data_geracao }} por {{ usuario_gerador }}</p>
+    </div>
+
+    {% if bens %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nome do Bem</th>
+                <th>Nº Patrimônio</th>
+                <th>Setor Atual</th>
+                <th>Condição</th>
+                <th>Data Aquisição</th>
+                <th>Descrição</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bem in bens %}
+            <tr>
+                <td>{{ bem.get('nome', 'N/A') }}</td>
+                <td>{{ bem.get('numero_patrimonio', 'N/A') }}</td>
+                <td>{{ bem.get('nome_setor_atual', 'N/A') }}</td>
+                <td>{{ bem.get('status', 'N/A') }}</td>
+                <td>{{ bem.get('data_aquisicao', 'N/A') }}</td>
+                <td>{{ bem.get('descricao', '') }}</td>
+                <td>{{ bem.get('observacoes', '') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="no-data">Nenhum bem encontrado para os critérios selecionados.</p>
+    {% endif %}
+
+    <div class="footer-info">
+        <p>Sistema de Gestão de Património ARSAL</p>
+    </div>
+</body>
+</html>

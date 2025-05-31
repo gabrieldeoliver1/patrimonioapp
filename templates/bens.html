@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Listagem de Bens - Gestão de Património{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 md:mb-0">
+                <i class="fas fa-boxes mr-3 text-blue-600"></i>Listagem de Bens
+            </h1>
+            {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('cadastrar_bem') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-0.5 flex items-center">
+                <i class="fas fa-plus-circle mr-2"></i>Cadastrar Novo Bem
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="relative w-full sm:w-auto">
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Buscar bem (nome, patrimônio, setor...)" class="w-full sm:w-80 pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+            </div>
+            </div>
+
+
+        {% if bens %}
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table id="bensTable" class="min-w-full leading-normal">
+                <thead class="bg-gray-800 text-gray-100">
+                    <tr>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Nome do Bem</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Nº Patrimônio</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Setor Atual</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Status</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Data Aquisição</th>
+                        {% if current_user.role == 'admin' %}
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-center text-xs sm:text-sm font-semibold uppercase tracking-wider">Ações</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {% for bem in bens %}
+                    <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="font-semibold whitespace-no-wrap">{{ bem.nome }}</p>
+                            <p class="text-gray-600 text-xs whitespace-no-wrap">{{ bem.descricao[:50] }}{% if bem.descricao|length > 50 %}...{% endif %}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">{{ bem.numero_patrimonio }}</td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">{{ bem.nome_setor_atual }}</td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <span class="relative inline-block px-3 py-1 font-semibold leading-tight rounded-full
+                                {% if bem.status == 'Disponível' %} bg-green-100 text-green-900
+                                {% elif bem.status == 'Em uso' %} bg-blue-100 text-blue-900
+                                {% elif bem.status == 'Em manutenção' %} bg-yellow-100 text-yellow-900
+                                {% elif bem.status == 'Baixado' %} bg-red-100 text-red-900
+                                {% else %} bg-gray-100 text-gray-700
+                                {% endif %}">
+                                <span aria-hidden class="absolute inset-0 opacity-50 rounded-full
+                                    {% if bem.status == 'Disponível' %} bg-green-200
+                                    {% elif bem.status == 'Em uso' %} bg-blue-200
+                                    {% elif bem.status == 'Em manutenção' %} bg-yellow-200
+                                    {% elif bem.status == 'Baixado' %} bg-red-200
+                                    {% else %} bg-gray-200
+                                    {% endif %}"></span>
+                                <span class="relative">{{ bem.status }}</span>
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">{{ bem.data_aquisicao }}</td>
+                        {% if current_user.role == 'admin' %}
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-center whitespace-no-wrap">
+                            <a href="{{ url_for('editar_bem', bem_id=bem.id) }}" class="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out mr-3" title="Editar">
+                                <i class="fas fa-edit fa-lg"></i>
+                            </a>
+                            <a href="{{ url_for('transferir_bem', bem_id=bem.id) }}" class="text-teal-600 hover:text-teal-800 transition duration-150 ease-in-out mr-3" title="Transferir">
+                                <i class="fas fa-exchange-alt fa-lg"></i>
+                            </a>
+                            <form action="{{ url_for('excluir_bem', bem_id=bem.id) }}" method="POST" class="inline-block" onsubmit="return confirm('Tem certeza que deseja excluir este bem? Esta ação não pode ser desfeita.');">
+                                <button type="submit" class="text-red-600 hover:text-red-800 transition duration-150 ease-in-out" title="Excluir">
+                                    <i class="fas fa-trash-alt fa-lg"></i>
+                                </button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-10">
+            <i class="fas fa-box-open fa-4x text-gray-400 mb-4"></i>
+            <p class="text-gray-500 text-xl">Nenhum bem cadastrado ainda.</p>
+            {% if current_user.role == 'admin' %}
+            <p class="text-gray-500 mt-2">Comece cadastrando um novo bem!</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function filterTable() {
+    let input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("bensTable");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows (except the header), and hide those who don't match the search query
+    for (i = 1; i < tr.length; i++) { // Start from 1 to skip header row (thead)
+        tr[i].style.display = "none"; // Default to hide
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) { // Iterate over all cells in the current row
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = ""; // Show row if a match is found in any cell
+                    break; // No need to check other cells in this row
+                }
+            }
+        }
+    }
+}
+</script>
+
+{% endblock %}

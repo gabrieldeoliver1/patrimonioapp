@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Novo Bem - Gestão de Património{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8">
+        <div class="flex items-center mb-6">
+            <a href="{{ url_for('listar_bens') }}" class="text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out mr-3" title="Voltar para Listagem de Bens">
+                <i class="fas fa-arrow-left fa-lg"></i>
+            </a>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
+                <i class="fas fa-plus-circle mr-3 text-blue-600"></i>Cadastrar Novo Bem
+            </h1>
+        </div>
+
+        <nav class="bg-gray-100 text-gray-700 p-3 rounded-lg shadow-sm mb-8">
+            <div class="container mx-auto flex flex-wrap items-center space-x-2 sm:space-x-4 text-sm">
+                <a href="{{ url_for('dashboard') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>Dashboard
+                </a>
+                <span class="text-gray-400">/</span>
+                <a href="{{ url_for('listar_bens') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-boxes mr-1 sm:mr-2"></i>Bens
+                </a>
+                <span class="text-gray-400">/</span>
+                <span class="font-semibold text-blue-600">Cadastrar Novo Bem</span>
+            </div>
+        </nav>
+
+
+        <form method="POST" action="{{ url_for('cadastrar_bem') }}" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="nome" class="block text-sm font-medium text-gray-700 mb-1">Nome do Bem <span class="text-red-500">*</span></label>
+                    <input type="text" name="nome" id="nome" value="{{ bem_form.nome if bem_form else '' }}" required class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Ex: Computador Dell Optiplex">
+                </div>
+                <div>
+                    <label for="numero_patrimonio" class="block text-sm font-medium text-gray-700 mb-1">Número de Patrimônio <span class="text-red-500">*</span></label>
+                    <input type="text" name="numero_patrimonio" id="numero_patrimonio" value="{{ bem_form.numero_patrimonio if bem_form else '' }}" required class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Ex: 04-000000" pattern="\d{2}-\d{6}" title="Formato esperado: XX-XXXXXX (ex: 04-000000)">
+                </div>
+            </div>
+
+            <div>
+                <label for="descricao" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                <textarea name="descricao" id="descricao" rows="3" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Ex: Processador i5, 8GB RAM, SSD 256GB">{{ bem_form.descricao if bem_form else '' }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="setor_atual" class="block text-sm font-medium text-gray-700 mb-1">Setor Atual <span class="text-red-500">*</span></label>
+                    <select name="setor_atual" id="setor_atual" required class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 bg-white">
+                        <option value="" disabled {% if not bem_form.setor_atual %}selected{% endif %}>Selecione um setor</option>
+                        {% for setor in setores %}
+                            {% if setor and setor.id and setor.nome %}
+                            <option value="{{ setor.id }}" {% if bem_form and bem_form.setor_atual == setor.id %}selected{% endif %}>{{ setor.nome }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="data_aquisicao" class="block text-sm font-medium text-gray-700 mb-1">Data de Aquisição</label>
+                    <input type="date" name="data_aquisicao" id="data_aquisicao" value="{{ bem_form.data_aquisicao if bem_form else '' }}" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Condição do Bem</label>
+                    <select name="status" id="status" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 bg-white">
+                        <option value="Ótimo" {% if bem_form and bem_form.status == 'Ótimo' %}selected{% endif %}>Ótimo</option>
+                        <option value="Bom" {% if bem_form and bem_form.status == 'Bom' %}selected{% endif %}>Bom</option>
+                        <option value="Regular" {% if bem_form and bem_form.status == 'Regular' %}selected{% endif %}>Regular</option>
+                        <option value="Ruim" {% if bem_form and bem_form.status == 'Ruim' %}selected{% endif %}>Ruim</option>
+                        <option value="Irrecuperável" {% if bem_form and bem_form.status == 'Irrecuperável' %}selected{% endif %}>Irrecuperável</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="observacoes" class="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+                <textarea name="observacoes" id="observacoes" rows="3" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Informações adicionais sobre o bem">{{ bem_form.observacoes if bem_form else '' }}</textarea>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <a href="{{ url_for('listar_bens') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2.5 px-6 rounded-lg shadow-sm hover:shadow transition duration-150 ease-in-out mr-3">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-0.5">
+                    <i class="fas fa-save mr-2"></i>Salvar Bem
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Listagem de Setores - Gestão de Património{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 md:mb-0">
+                <i class="fas fa-sitemap mr-3 text-blue-600"></i>Listagem de Setores
+            </h1>
+            {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('cadastrar_setor') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-0.5 flex items-center">
+                <i class="fas fa-plus-circle mr-2"></i>Cadastrar Novo Setor
+            </a>
+            {% endif %}
+        </div>
+
+        <nav class="bg-gray-100 text-gray-700 p-3 rounded-lg shadow-sm mb-8">
+            <div class="container mx-auto flex flex-wrap items-center space-x-2 sm:space-x-4 text-sm">
+                <a href="{{ url_for('dashboard') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>Dashboard
+                </a>
+                <span class="text-gray-400">/</span>
+                {# CORREÇÃO APLICADA ABAIXO, assumindo que a linha 17 do traceback se refere a um link de navegação aqui #}
+                <a href="{{ url_for('listar_bens') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-boxes mr-1 sm:mr-2"></i>Bens
+                </a>
+                <span class="text-gray-400">/</span>
+                <span class="font-semibold text-blue-600">Setores</span>
+            </div>
+        </nav>
+
+        {% if setores %}
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table class="min-w-full leading-normal">
+                <thead class="bg-gray-800 text-gray-100">
+                    <tr>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Nome do Setor</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Descrição</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Data de Criação</th>
+                        {% if current_user.role == 'admin' %}
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-center text-xs sm:text-sm font-semibold uppercase tracking-wider">Ações</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {% for setor in setores %}
+                    {% if setor and setor.id and setor.nome %} {# Adicionada verificação para setor válido #}
+                    <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="font-semibold whitespace-no-wrap">{{ setor.nome }}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="whitespace-no-wrap">{{ setor.descricao[:100] }}{% if setor.descricao|length > 100 %}...{% endif %}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">{{ setor.data_criacao }}</td>
+                        {% if current_user.role == 'admin' %}
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-center whitespace-no-wrap">
+                            <a href="{{ url_for('editar_setor', setor_id=setor.id) }}" class="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out mr-3" title="Editar">
+                                <i class="fas fa-edit fa-lg"></i>
+                            </a>
+                            <form action="{{ url_for('excluir_setor', setor_id=setor.id) }}" method="POST" class="inline-block" onsubmit="return confirm('Tem certeza que deseja excluir este setor? Esta ação não pode ser desfeita e só é permitida se o setor não estiver associado a nenhum bem.');">
+                                <button type="submit" class="text-red-600 hover:text-red-800 transition duration-150 ease-in-out" title="Excluir">
+                                    <i class="fas fa-trash-alt fa-lg"></i>
+                                </button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-10">
+            <i class="fas fa-sitemap fa-4x text-gray-400 mb-4"></i>
+            <p class="text-gray-500 text-xl">Nenhum setor cadastrado ainda.</p>
+            {% if current_user.role == 'admin' %}
+            <p class="text-gray-500 mt-2">Comece cadastrando um novo setor!</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuário - Gestão de Património{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 max-w-2xl mx-auto">
+        <div class="flex items-center mb-6">
+            <a href="{{ url_for('listar_usuarios') }}" class="text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out mr-3" title="Voltar para Listagem de Usuários">
+                <i class="fas fa-arrow-left fa-lg"></i>
+            </a>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
+                <i class="fas fa-user-edit mr-3 text-blue-600"></i>Editar Usuário: {{ user_id_edit }}
+            </h1>
+        </div>
+
+        <nav class="bg-gray-100 text-gray-700 p-3 rounded-lg shadow-sm mb-8">
+            <div class="container mx-auto flex flex-wrap items-center space-x-2 sm:space-x-4 text-sm">
+                <a href="{{ url_for('dashboard') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>Dashboard
+                </a>
+                <span class="text-gray-400">/</span>
+                <a href="{{ url_for('listar_usuarios') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-users-cog mr-1 sm:mr-2"></i>Usuários
+                </a>
+                <span class="text-gray-400">/</span>
+                <span class="font-semibold text-blue-600">Editar Usuário</span>
+            </div>
+        </nav>
+
+        <form method="POST" action="{{ url_for('editar_usuario', user_id_edit=user_id_edit) }}" class="space-y-6">
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nome de Usuário (não pode ser alterado)</label>
+                <input type="text" name="username" id="username" value="{{ user_id_edit }}" readonly class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm bg-gray-100 cursor-not-allowed">
+            </div>
+            
+            <div>
+                <label for="nome_completo" class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+                <input type="text" name="nome_completo" id="nome_completo" value="{{ usuario_para_editar.get('nome_completo', '') }}" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Ex: João da Silva">
+            </div>
+
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" name="email" id="email" value="{{ usuario_para_editar.get('email', '') }}" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Ex: joao.silva@example.com">
+            </div>
+
+            <div>
+                <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Nível de Acesso <span class="text-red-500">*</span></label>
+                <select name="role" id="role" required class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 bg-white" onchange="toggleSetorField()">
+                    <option value="user" {% if usuario_para_editar.get('role') == 'user' %}selected{% endif %}>Usuário Padrão</option>
+                    <option value="gestor" {% if usuario_para_editar.get('role') == 'gestor' %}selected{% endif %}>Gestor</option>
+                    <option value="admin" {% if usuario_para_editar.get('role') == 'admin' %}selected{% endif %}>Administrador</option>
+                </select>
+            </div>
+
+            <div id="setor_field_container" class="{% if usuario_para_editar.get('role') == 'admin' %}hidden{% endif %}">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Setor(es) Atribuído(s) <span id="setor_obrigatorio_asterisco" class="text-red-500 {% if usuario_para_editar.get('role') == 'admin' %}hidden{% endif %}">*</span></label>
+                <div class="mt-1 max-h-60 overflow-y-auto border border-gray-300 rounded-lg p-3 space-y-2 bg-white">
+                    {% for setor in setores %}
+                        {% if setor and setor.id and setor.nome %}
+                        <div class="flex items-center">
+                            <input type="checkbox" id="setor_{{ setor.id }}" name="setores_ids" value="{{ setor.id }}"
+                                   {% if setor.id in usuario_para_editar.get('setores_ids', []) %}checked{% endif %}
+                                   class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="setor_{{ setor.id }}" class="ml-2 text-sm text-gray-600">{{ setor.nome }}</label>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="mt-1 text-xs text-gray-500">Selecione pelo menos um setor para Usuários Padrão e Gestores.</p>
+            </div>
+
+            <hr class="my-6">
+
+            <h2 class="text-xl font-semibold text-gray-700 mb-1">Alterar Senha (opcional)</h2>
+            <p class="text-sm text-gray-500 mb-4">Preencha os campos abaixo apenas se desejar alterar a senha.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="nova_senha" class="block text-sm font-medium text-gray-700 mb-1">Nova Senha</label>
+                    <input type="password" name="nova_senha" id="nova_senha" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Mínimo 6 caracteres">
+                </div>
+                <div>
+                    <label for="confirmar_nova_senha" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Nova Senha</label>
+                    <input type="password" name="confirmar_nova_senha" id="confirmar_nova_senha" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" placeholder="Repita a nova senha">
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <a href="{{ url_for('listar_usuarios') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2.5 px-6 rounded-lg shadow-sm hover:shadow transition duration-150 ease-in-out mr-3">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-0.5">
+                    <i class="fas fa-save mr-2"></i>Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function toggleSetorField() {
+        const roleSelect = document.getElementById('role');
+        const setorFieldContainer = document.getElementById('setor_field_container');
+        const setorCheckboxes = document.querySelectorAll('input[name="setores_ids"]');
+        const setorObrigatorioAsterisco = document.getElementById('setor_obrigatorio_asterisco');
+
+        if (roleSelect.value === 'admin') {
+            setorFieldContainer.classList.add('hidden');
+            if (setorObrigatorioAsterisco) setorObrigatorioAsterisco.classList.add('hidden');
+            // Para admin, os checkboxes de setor não são required, e podem ser desmarcados
+            setorCheckboxes.forEach(cb => cb.required = false);
+        } else {
+            setorFieldContainer.classList.remove('hidden');
+            if (setorObrigatorioAsterisco) setorObrigatorioAsterisco.classList.remove('hidden');
+            // Para user/gestor, pelo menos um setor deve ser selecionado.
+            // A validação de "pelo menos um" é mais complexa para checkboxes e geralmente feita no backend.
+            // Podemos deixar 'required' no primeiro checkbox como uma indicação visual,
+            // mas a validação real deve ocorrer no servidor.
+            // if (setorCheckboxes.length > 0) setorCheckboxes[0].required = true; // Indicação simples
+        }
+    }
+    document.addEventListener('DOMContentLoaded', toggleSetorField);
+</script>
+{% endblock %}

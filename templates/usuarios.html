@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Listagem de Usuários - Gestão de Património{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-xl rounded-xl p-6 md:p-8 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 md:mb-0">
+                <i class="fas fa-users-cog mr-3 text-blue-600"></i>Listagem de Usuários
+            </h1>
+            {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('cadastrar_usuario') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-0.5 flex items-center">
+                <i class="fas fa-user-plus mr-2"></i>Cadastrar Novo Usuário
+            </a>
+            {% endif %}
+        </div>
+
+        <nav class="bg-gray-100 text-gray-700 p-3 rounded-lg shadow-sm mb-8">
+            <div class="container mx-auto flex flex-wrap items-center space-x-2 sm:space-x-4 text-sm">
+                <a href="{{ url_for('dashboard') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-tachometer-alt mr-1 sm:mr-2"></i>Dashboard
+                </a>
+                <span class="text-gray-400">/</span>
+                {# CORREÇÃO APLICADA ABAIXO, assumindo que a linha 17 do traceback se refere a um link de navegação aqui #}
+                <a href="{{ url_for('listar_bens') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-boxes mr-1 sm:mr-2"></i>Bens
+                </a>
+                <span class="text-gray-400">/</span>
+                <a href="{{ url_for('listar_setores') }}" class="hover:text-blue-600 transition duration-300 flex items-center">
+                    <i class="fas fa-sitemap mr-1 sm:mr-2"></i>Setores
+                </a>
+                <span class="text-gray-400">/</span>
+                <span class="font-semibold text-blue-600">Usuários</span>
+            </div>
+        </nav>
+
+        {% if usuarios %}
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+            <table class="min-w-full leading-normal">
+                <thead class="bg-gray-800 text-gray-100">
+                    <tr>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Nome de Usuário</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Nome Completo</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Email</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Nível</th>
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-left text-xs sm:text-sm font-semibold uppercase tracking-wider">Data de Cadastro</th>
+                        {% if current_user.role == 'admin' %}
+                        <th class="px-5 py-4 border-b-2 border-gray-700 text-center text-xs sm:text-sm font-semibold uppercase tracking-wider">Ações</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {% for usuario in usuarios %}
+                    <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="font-semibold whitespace-no-wrap">{{ usuario.username }}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="whitespace-no-wrap">{{ usuario.nome_completo if usuario.nome_completo else '-' }}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <p class="whitespace-no-wrap">{{ usuario.email if usuario.email else '-' }}</p>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">
+                            <span class="relative inline-block px-3 py-1 font-semibold leading-tight rounded-full
+                                {% if usuario.role == 'admin' %} bg-red-100 text-red-900
+                                {% elif usuario.role == 'user' %} bg-green-100 text-green-900
+                                {% else %} bg-gray-100 text-gray-700
+                                {% endif %}">
+                                <span aria-hidden class="absolute inset-0 opacity-50 rounded-full
+                                    {% if usuario.role == 'admin' %} bg-red-200
+                                    {% elif usuario.role == 'user' %} bg-green-200
+                                    {% else %} bg-gray-200
+                                    {% endif %}"></span>
+                                <span class="relative">{{ usuario.role|capitalize if usuario.role else 'N/A' }}</span>
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">{{ usuario.data_cadastro if usuario.data_cadastro else '-'}}</td>
+                        {% if current_user.role == 'admin' %}
+                        <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-center whitespace-no-wrap">
+                            <a href="{{ url_for('editar_usuario', user_id_edit=usuario.username) }}" class="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out mr-3" title="Editar">
+                                <i class="fas fa-user-edit fa-lg"></i>
+                            </a>
+                            {% if usuario.username != current_user.username %} {# Prevenir auto-exclusão #}
+                            <form action="{{ url_for('excluir_usuario', user_id_delete=usuario.username) }}" method="POST" class="inline-block" onsubmit="return confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.');">
+                                <button type="submit" class="text-red-600 hover:text-red-800 transition duration-150 ease-in-out" title="Excluir">
+                                    <i class="fas fa-user-times fa-lg"></i>
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-gray-400 cursor-not-allowed" title="Não pode excluir a si mesmo">
+                                <i class="fas fa-user-times fa-lg"></i>
+                            </span>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-10">
+            <i class="fas fa-users fa-4x text-gray-400 mb-4"></i>
+            <p class="text-gray-500 text-xl">Nenhum usuário cadastrado ainda.</p>
+            {% if current_user.role == 'admin' %}
+            <p class="text-gray-500 mt-2">Comece cadastrando um novo usuário!</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

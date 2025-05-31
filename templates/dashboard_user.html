@@ -1,0 +1,186 @@
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white shadow-xl rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-pie mr-2 text-green-600"></i>Bens por Condição no Setor
+            </h2>
+            {% if chart_condicao_data.labels and chart_condicao_data.labels|length > 0 and chart_condicao_data.data and chart_condicao_data.data|sum > 0 %}
+            <div class="relative h-72">
+                <canvas id="bensPorCondicaoChart"></canvas>
+            </div>
+            {% else %}
+            <div class="text-center py-10">
+                <i class="fas fa-chart-pie fa-4x text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-xl">Sem dados suficientes para exibir o gráfico de bens por condição no seu setor.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="bg-white shadow-xl rounded-xl p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-line mr-2 text-purple-600"></i>Atividade Recente do Setor (Últimos 30 Dias)
+            </h2>
+            {% if daily_activity_data and daily_activity_data|length > 0 %}
+            <div class="relative h-72">
+                <canvas id="dailyActivityChart"></canvas>
+            </div>
+            {% else %}
+            <div class="text-center py-10">
+                <i class="fas fa-calendar-alt fa-4x text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-xl">Sem dados de atividade para exibir no seu setor.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dados e opções de gráfico comuns
+            const chartCondicaoData = {{ chart_condicao_data | default({}) | tojson }};
+            const dailyActivityDataJS = {{ daily_activity_data | default({}) | tojson }};
+            const chartColors = ['#4A90E2', '#50C878', '#FFD700', '#FF6347', '#9370DB', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+            const commonChartOptions = { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { 
+                        position: 'top', 
+                        labels: {
+                            boxWidth: 12,
+                            padding: 10,
+                            font: {
+                                size: 12,
+                                family: 'Inter, sans-serif'
+                            }
+                        } 
+                    }, 
+                    title: { display: false } 
+                }, 
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            precision: 0, 
+                            font: {
+                                size: 11,
+                                family: 'Inter, sans-serif'
+                            } 
+                        },
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)'
+                        }
+                    }, 
+                    x: { 
+                        ticks: { 
+                            font: {
+                                size: 11,
+                                family: 'Inter, sans-serif'
+                            } 
+                        },
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)'
+                        }
+                    } 
+                } 
+            };
+
+            // Gráfico de Bens por Condição
+            const ctxCondicao = document.getElementById('bensPorCondicaoChart');
+            if (ctxCondicao && chartCondicaoData && chartCondicaoData.labels && chartCondicaoData.labels.length > 0 && chartCondicaoData.data && chartCondicaoData.data.some(d => d > 0)) {
+                new Chart(ctxCondicao.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: chartCondicaoData.labels,
+                        datasets: [{
+                            label: 'Nº de Bens',
+                            data: chartCondicaoData.data,
+                            backgroundColor: chartColors,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { 
+                                position: 'right', // Positioning legend to the right for pie chart
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 10,
+                                    font: {
+                                        size: 12,
+                                        family: 'Inter, sans-serif'
+                                    }
+                                } 
+                            }, 
+                            title: { display: false } 
+                        } 
+                    }
+                });
+            } else if (ctxCondicao) {
+                ctxCondicao.parentNode.innerHTML = '<div class="text-center py-10"><i class="fas fa-chart-pie fa-4x text-gray-400 mb-4"></i><p class="text-gray-500 text-xl">Sem dados suficientes para exibir o gráfico de bens por condição no seu setor.</p></div>';
+            }
+
+            // Gráfico de Atividade Diária
+            const ctxActivity = document.getElementById('dailyActivityChart');
+            if (ctxActivity && dailyActivityDataJS && Object.keys(dailyActivityDataJS).length > 0 && Object.values(dailyActivityDataJS).some(v => v > 0)) {
+                new Chart(ctxActivity.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(dailyActivityDataJS).map(dateStr => { 
+                            const date = new Date(dateStr + 'T00:00:00Z'); 
+                            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', timeZone: 'UTC' }); 
+                        }),
+                        datasets: [{
+                            label: 'Nº de Alterações',
+                            data: Object.values(dailyActivityDataJS),
+                            borderColor: '#4A90E2', 
+                            backgroundColor: 'rgba(74, 144, 226, 0.1)', 
+                            fill: true,
+                            tension: 0.4, 
+                            pointRadius: 3, 
+                            pointBackgroundColor: '#4A90E2',
+                            pointBorderColor: '#fff',
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: '#4A90E2',
+                            pointHoverBorderColor: '#fff'
+                        }]
+                    },
+                    options: { 
+                        ...commonChartOptions, 
+                        plugins: {
+                            ...commonChartOptions.plugins,
+                            legend: {display: false}
+                        },
+                        scales: { 
+                            ...commonChartOptions.scales, 
+                            y: {
+                                ...commonChartOptions.scales.y,
+                                title: { 
+                                    display: true, 
+                                    text: 'Número de Alterações',
+                                    font: { size: 12, family: 'Inter, sans-serif' },
+                                    color: '#666'
+                                },
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            },
+                            x: {
+                                ...commonChartOptions.scales.x,
+                                title: {
+                                    display: true,
+                                    text: 'Data',
+                                    font: { size: 12, family: 'Inter, sans-serif' },
+                                    color: '#666'
+                                }
+                            }
+                        } 
+                    } 
+                });
+            } else if (ctxActivity) {
+                ctxActivity.parentNode.innerHTML = '<div class="text-center py-10"><i class="fas fa-calendar-alt fa-4x text-gray-400 mb-4"></i><p class="text-gray-500 text-xl">Sem dados de atividade para exibir no seu setor.</p></div>';
+            }
+        });
+    </script>

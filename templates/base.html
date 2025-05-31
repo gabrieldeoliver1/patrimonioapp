@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestão de Património{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; 
+        }
+        .sidebar {
+            transition: width 0.3s ease-in-out;
+        }
+        .sidebar.collapsed {
+            width: 4rem; 
+        }
+        .sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        .sidebar.collapsed .sidebar-icon {
+            margin-right: 0;
+            font-size: 1.5rem; 
+        }
+        .sidebar.collapsed .user-info {
+            display: none;
+        }
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        .sidebar.collapsed .logo-icon {
+             font-size: 1.8rem; 
+             padding: 0.5rem;
+        }
+        .sidebar-item:hover {
+            background-color: #2563eb; 
+        }
+        .active-sidebar-item {
+            background-color: #1d4ed8; 
+            border-left: 4px solid #facc15; 
+        }
+        .flash-messages .flash {
+            border-left-width: 4px;
+            animation: fadeInSlideDown 0.5s ease-out forwards;
+        }
+        @keyframes fadeInSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <aside id="sidebar" class="sidebar bg-blue-700 text-white w-64 space-y-6 py-7 px-2 fixed inset-y-0 left-0 transform md:relative md:translate-x-0 transition-transform duration-200 ease-in-out z-30 shadow-lg">
+        <div class="px-4 mb-6 flex items-center justify-between">
+            <a href="{{ url_for('dashboard') }}" class="flex items-center space-x-2 text-white">
+                <i class="fas fa-landmark fa-2x logo-icon"></i>
+                <span class="text-2xl font-extrabold logo-text">Patrimônio</span>
+            </a>
+            <button id="toggleSidebarMobile" class="md:hidden text-white focus:outline-none">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+        </div>
+
+        <div class="user-info px-4 py-3 mb-4 border-t border-b border-blue-600">
+            {% if current_user.is_authenticated %}
+            <p class="text-sm font-semibold">{{ current_user.nome_completo or current_user.username }}</p>
+            <p class="text-xs text-blue-200">{{ current_user.role|capitalize }}</p>
+            {% endif %}
+        </div>
+
+        <nav class="space-y-2">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-blue-600 transition duration-150 {% if request.endpoint == 'dashboard' %}active-sidebar-item{% endif %}">
+                <i class="fas fa-tachometer-alt fa-fw sidebar-icon"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            
+            <a href="{{ url_for('listar_bens') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-blue-600 transition duration-150 {% if request.endpoint.startswith('listar_bens') or request.endpoint.startswith('cadastrar_bem') or request.endpoint.startswith('editar_bem') or request.endpoint.startswith('transferir_bem') %}active-sidebar-item{% endif %}">
+                <i class="fas fa-boxes fa-fw sidebar-icon"></i>
+                <span class="sidebar-text">Bens</span>
+            </a>
+
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <a href="{{ url_for('listar_setores') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-blue-600 transition duration-150 {% if request.endpoint.startswith('listar_setores') or request.endpoint.startswith('cadastrar_setor') or request.endpoint.startswith('editar_setor') %}active-sidebar-item{% endif %}">
+                <i class="fas fa-sitemap fa-fw sidebar-icon"></i>
+                <span class="sidebar-text">Setores</span>
+            </a>
+            <a href="{{ url_for('listar_usuarios') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-blue-600 transition duration-150 {% if request.endpoint.startswith('listar_usuarios') or request.endpoint.startswith('cadastrar_usuario') or request.endpoint.startswith('editar_usuario') %}active-sidebar-item{% endif %}">
+                <i class="fas fa-users-cog fa-fw sidebar-icon"></i>
+                <span class="sidebar-text">Usuários</span>
+            </a>
+            {% endif %}
+            <a href="{{ url_for('visualizar_historico') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-blue-600 transition duration-150 {% if request.endpoint == 'visualizar_historico' %}active-sidebar-item{% endif %}">
+                <i class="fas fa-history fa-fw sidebar-icon"></i>
+                <span class="sidebar-text">Histórico</span>
+            </a>
+            
+            {# CORREÇÃO: Link de Notificações apenas para Admin #}
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <a href="{{ url_for('listar_notificacoes') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-blue-600 transition duration-150 {% if request.endpoint == 'listar_notificacoes' %}active-sidebar-item{% endif %}">
+                <i class="fas fa-bell fa-fw sidebar-icon"></i>
+                <span class="sidebar-text">Notificações</span>
+                {% if num_notificacoes_nao_lidas > 0 %}
+                    <span class="ml-auto bg-yellow-400 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full sidebar-text">{{ num_notificacoes_nao_lidas }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+        </nav>
+
+        <div class="absolute bottom-0 left-0 right-0 px-4 py-6 border-t border-blue-600">
+             <button id="toggleSidebarDesktop" class="hidden md:block text-blue-200 hover:text-white focus:outline-none mb-3">
+                <i class="fas fa-exchange-alt"></i>
+                <span class="sidebar-text ml-2">Recolher Menu</span>
+            </button>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-md bg-red-500 hover:bg-red-600 transition duration-150">
+                <i class="fas fa-sign-out-alt fa-fw sidebar-icon"></i>
+                <span class="sidebar-text">Logout</span>
+            </a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-md md:hidden p-4 flex justify-between items-center">
+            <button id="openSidebarMobile" class="text-gray-600 focus:outline-none">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="flex items-center space-x-2 text-blue-700">
+                <i class="fas fa-landmark fa-lg"></i>
+                <span class="text-xl font-extrabold">Patrimônio</span>
+            </a>
+            <div class="w-8"></div> </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-8">
+            <div class="flash-messages fixed top-5 right-5 z-50 w-full max-w-sm">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }} bg-{{ 'green' if category == 'success' else ('red' if category == 'danger' else ('yellow' if category == 'warning' else 'blue')) }}-100 border-{{ 'green' if category == 'success' else ('red' if category == 'danger' else ('yellow' if category == 'warning' else 'blue')) }}-500 text-{{ 'green' if category == 'success' else ('red' if category == 'danger' else ('yellow' if category == 'warning' else 'blue')) }}-700 px-4 py-3 rounded-lg relative shadow-md mb-3" role="alert">
+                                <strong class="font-bold">
+                                    {% if category == 'success' %}Sucesso!
+                                    {% elif category == 'danger' %}Erro!
+                                    {% elif category == 'warning' %}Atenção!
+                                    {% else %}Info:
+                                    {% endif %}
+                                </strong>
+                                <span class="block sm:inline">{{ message }}</span>
+                                <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebarDesktop = document.getElementById('toggleSidebarDesktop');
+    const toggleSidebarMobile = document.getElementById('toggleSidebarMobile');
+    const openSidebarMobile = document.getElementById('openSidebarMobile');
+
+    let isSidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+    function applySidebarState() {
+        if (isSidebarCollapsed) {
+            sidebar.classList.add('collapsed');
+            sidebar.classList.remove('w-64');
+            sidebar.classList.add('w-16'); 
+        } else {
+            sidebar.classList.remove('collapsed');
+            sidebar.classList.remove('w-16');
+            sidebar.classList.add('w-64');
+        }
+    }
+    
+    applySidebarState();
+
+    if (toggleSidebarDesktop) {
+        toggleSidebarDesktop.addEventListener('click', () => {
+            isSidebarCollapsed = !isSidebarCollapsed;
+            localStorage.setItem('sidebarCollapsed', isSidebarCollapsed);
+            applySidebarState();
+        });
+    }
+
+    if (openSidebarMobile) {
+        openSidebarMobile.addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full'); 
+            sidebar.classList.add('translate-x-0');
+        });
+    }
+
+    if (toggleSidebarMobile) {
+         toggleSidebarMobile.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full'); 
+            sidebar.classList.remove('translate-x-0');
+        });
+    }
+
+    setTimeout(() => {
+        const flashMessages = document.querySelectorAll('.flash-messages .flash');
+        flashMessages.forEach(flash => {
+            if (flash.style.display !== 'none') { 
+                flash.style.transition = 'opacity 0.5s ease-out';
+                flash.style.opacity = '0';
+                setTimeout(() => flash.style.display = 'none', 500);
+            }
+        });
+    }, 7000); 
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

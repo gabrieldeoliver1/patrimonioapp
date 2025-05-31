@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Não Encontrada - 404</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Estilos específicos para esta página se necessário */
+        .card { /* Reaplicado para clareza, pode ser removido se style.css for suficiente */
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="text-center card p-8 mx-4">
+        <h1 class="text-6xl font-bold text-red-600 mb-4">404</h1>
+        <h2 class="text-3xl font-semibold text-gray-800 mb-4">Página Não Encontrada</h2>
+        <p class="text-gray-600 mb-6">A página que você está procurando não existe ou foi movida.</p>
+        <a href="{{ url_for('dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+            <i class="fas fa-arrow-left mr-2"></i>Voltar ao Dashboard
+        </a>
+    </div>
+    <footer class="bg-gray-800 p-4 text-white text-center w-full absolute bottom-0">
+        <p>&copy; {{ current_year }} Gestão de Patrimônio. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>

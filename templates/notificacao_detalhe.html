@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhe da Notificação - Gestão de Patrimônio</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <nav class="bg-blue-700 p-4 text-white shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{{ url_for('dashboard') }}" class="text-2xl font-bold rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Gestão de Patrimônio</a>
+            <div class="flex space-x-4">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('bens') }}" class="rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Bens</a>
+                    <a href="{{ url_for('historico') }}" class="rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Histórico</a>
+                    
+                    {% if current_user.has_role('admin') %}
+                        <a href="{{ url_for('usuarios') }}" class="rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Usuários</a>
+                        <a href="{{ url_for('setores') }}" class="rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Setores</a>
+                        <a href="{{ url_for('notificacoes') }}" class="rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Notificações</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="rounded-md px-3 py-2 bg-red-500 hover:bg-red-600 transition duration-300">Sair ({{ current_user.username }})</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="rounded-md px-3 py-2 hover:bg-blue-600 transition duration-300">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto p-6">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Detalhe da Notificação</h1>
+
+        <div class="card p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Mensagem da Notificação</h2>
+            <p class="text-gray-600 text-lg">{{ mensagem }}</p>
+        </div>
+
+        {% if detalhes %}
+        <div class="card p-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Detalhes do Histórico Relacionado</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                <div>
+                    <p class="mb-2"><strong>Número do Patrimônio:</strong> {{ detalhes.numero_patrimonio }}</p>
+                    <p class="mb-2"><strong>Data/Hora da Alteração:</strong> {{ detalhes.data_hora_formatada if detalhes.data_hora_formatada else detalhes.data_hora }}</p>
+                    <p class="mb-2"><strong>Usuário que Realizou:</strong> {{ detalhes.usuario }}</p>
+                    <p class="mb-2"><strong>Tipo de Alteração:</strong> {{ detalhes.tipo_alteracao | capitalize }}</p>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-2">Dados Anteriores:</h3>
+                    {% if detalhes.dados_anteriores %}
+                        <ul class="list-disc list-inside pl-0">
+                            {% for key, value in detalhes.dados_anteriores.items() %}
+                                <li><strong>{{ key }}:</strong> {{ value if value is not none else 'N/A' }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>N/A (Provavelmente um cadastro inicial).</p>
+                    {% endif %}
+                </div>
+                <div class="md:col-span-2">
+                    <h3 class="font-bold mb-2">Dados Novos:</h3>
+                    {% if detalhes.dados_novos %}
+                        <ul class="list-disc list-inside pl-0">
+                            {% for key, value in detalhes.dados_novos.items() %}
+                                <li><strong>{{ key }}:</strong> {{ value if value is not none else 'N/A' }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>N/A (Provavelmente uma exclusão).</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning p-4 rounded-md text-yellow-800 bg-yellow-100 border border-yellow-200" role="alert">
+            Nenhum detalhe de histórico específico encontrado para esta notificação.
+        </div>
+        {% endif %}
+
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('notificacoes') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>Voltar para Notificações
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 p-4 text-white text-center mt-auto">
+        <p>&copy; {{ current_year }} Gestão de Patrimônio. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
